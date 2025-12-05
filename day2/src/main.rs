@@ -3,9 +3,43 @@ use std::io;
 
 fn main() -> io::Result<()> {
     let input = fs::read_to_string("./input.txt")?;
-    let answer = solve_p1(&input);
+    let answer = solve_p2(&input);
     println!("{}", answer);
     Ok(())
+}
+
+fn solve_p2(input: &str) -> u64 {
+    let mut answer: u64 = 0;
+    for line in input.split(",").map(str::trim).filter(|l| !l.is_empty()) {
+        let range: Vec<&str> = line.split("-").collect();
+        let start: u64 = range[0].trim().parse().expect("Invalid Start Range");
+        let end: u64 = range[1].trim().parse().expect("Invalid End Range");
+
+        for i in start..=end {
+            let num_str: String = i.to_string();
+            let len = num_str.len();
+
+            for len_block in 1..=len / 2 {
+                if len % len_block != 0 {
+                    continue;
+                }
+                let pattern = &num_str[..len_block];
+                let repeats = len / len_block;
+
+                let mut built = String::with_capacity(len);
+                for _ in 0..repeats {
+                    built.push_str(pattern);
+                }
+
+                if built == num_str {
+                    answer += i;
+                    break;
+                }
+            }
+        }
+    }
+
+    return answer;
 }
 
 fn solve_p1(input: &str) -> u64 {
